@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Transactions;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -39,24 +40,27 @@ namespace tp_4
                 if (!esNumero)
                 {
                     Console.WriteLine("Debe ingresar un número");
+                    Console.WriteLine("Presione cualquier teclapara continuar");
+                    Console.ReadKey();
                 }
                 else if (opcion < 1 || opcion > 3)
                 {
                     Console.WriteLine("La opción ingresada no es válida. Inténtelo nuevamente");
+                    Console.WriteLine("Presione cualquier teclapara continuar");
+                    Console.ReadKey();
                 }
 
-                Console.ReadKey();
                 Console.Clear();
                 RenderizarMenu();
 
-            } while (!esNumero || opcion < 1 || opcion > 3);
+            } while (!esNumero || opcion < 1 || opcion > 3);// Se repetira mientras estas condiciones sean true
 
 
 
             //Ingresar el numero de tarjeta de credito
             Console.Clear();
             Console.WriteLine("Ingrese los 16 dígitos de su tarjeta de crédito");
-
+            //validar que el string este entre 0 y 9 .lenght de la cadena 
             numeroTarjeta = Console.ReadLine();
 
             string empresa = numeroTarjeta.Substring(0, 4);//.Substring es un metodo de la clase string que permite obtener una subcadena de la cadena original , lo que se pasa como parametro es el indice de inicio y la cantidad de caracteres que se desea obtener
@@ -70,15 +74,15 @@ namespace tp_4
                 {
                     case 1:
                         mostrarUltimos4Digitos(numeroTarjeta);
-                        ObtenerTransaccionesVisa();
+                        ObtenerTransaccionesVisa(empresa,opcion);
                         break;
                     case 2:
                         mostrarUltimos4Digitos(numeroTarjeta);
-                        ObtenerTransaccionesMastercard();
+                        ObtenerTransaccionesMastercard(empresa, opcion);
                         break;
                     case 3:
                         mostrarUltimos4Digitos(numeroTarjeta);
-                        ObtenerTransaccionesDinersClub();
+                        ObtenerTransaccionesDinersClub(empresa, opcion);
                         break;
                 }
             }
@@ -120,67 +124,96 @@ namespace tp_4
 
             static void mostrarUltimos4Digitos(string numeroTarjeta)
             {
-                Console.WriteLine("Movimientos de su cuenta Visa terminada en .." + numeroTarjeta.Substring(12, 4));
+                Console.WriteLine("Movimientos de su cuenta Visa terminada en .." + numeroTarjeta.Substring(12,4));
             }
 
 
 
             //funcion que obtiene las transacciones de visa como array y mostrarlas con un while
             //Los arrays son colecciones de elementos que se pueden acceder por su indice y que tienen una cantidad fija de elementos
-            static void ObtenerTransaccionesVisa()
+            static void ObtenerTransaccionesVisa(string empresa, int opcion)
             {
                 float[] transacciones = new float[5];
 
-                //cargo vector de 5 transacciones con ciclo for
-                for (int i = 0; i < transacciones.Length; i++)
+                if (ValidarTarjeta(empresa, opcion))
                 {
-                    transacciones[i] = GenerateRandomTransaction();
+
+                    //cargo vector de 5 transacciones con ciclo for
+                    for (int i = 0; i < transacciones.Length; i++)
+                    {
+                        transacciones[i] = GenerateRandomTransaction();
+                    }
+
+                    int j = 0;
+                    while (j < transacciones.Length)
+                    {
+                        Console.WriteLine("Transacción N°" + (j + 1) + " - Monto: $" + transacciones[j]);
+                        j++;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("La tarjeta ingresada no es visa");
                 }
 
-                int j = 0;
-                while (j < transacciones.Length)
-                {
-                    Console.WriteLine("Transacción N°" + (j + 1) + " - Monto: $" + transacciones[j]);
-                    j++;
-                }
             }
 
             //funcion que obtiene las transacciones de mastercard como lista y mostrarlas con un do while
             //Las listas son colecciones de elementos que se pueden acceder por su indice y que pueden tener cualquier cantidad de elementos
-            static void ObtenerTransaccionesMastercard()
+            static void ObtenerTransaccionesMastercard(string empresa, int opcion)
             {
                 List<float> transacciones = new List<float>();
 
-                //cargo la lista de transacciones con 5 transacciones
-                for (int i = 0; i < 5; i++)
+                if (ValidarTarjeta(empresa, opcion))
                 {
-                    transacciones.Add(GenerateRandomTransaction());
+                    //cargo la lista de transacciones con 5 transacciones
+                    for (int i = 0; i < 5; i++)
+                    {
+                        transacciones.Add(GenerateRandomTransaction());
+                    }
+
+                    int j = 0;
+                    do
+                    {
+                        Console.WriteLine("Transacción N°" + (j + 1) + " - Monto: $" + transacciones[j]);
+                        j++;
+                    } while (j < transacciones.Count);
+                }
+                else
+                {
+                    Console.WriteLine("Estarjeta no es mastercard");
+                
                 }
 
-                int j = 0;
-                do
-                {
-                    Console.WriteLine("Transacción N°" + (j + 1) + " - Monto: $" + transacciones[j]);
-                    j++;
-                } while (j < transacciones.Count);
+                
             }
 
             //funcion que obtiene las transacciones de Diners Club como diccionario y mostrarlas con un foreach
             //Los diccionarios son colecciones de elementos que se pueden acceder por su clave y que pueden tener cualquier cantidad de elementos
-            static void ObtenerTransaccionesDinersClub()
+            static void ObtenerTransaccionesDinersClub(string empresa, int opcion)
             {
                 Dictionary<int, float> transacciones = new Dictionary<int, float>();
 
-                //cargo el diccionario de transacciones con 5 transacciones
-                for (int i = 0; i < 5; i++)
+                if (ValidarTarjeta(empresa, opcion))
                 {
-                    transacciones.Add(i, GenerateRandomTransaction()); //El primer parametro es la clave que hace referencia a la transaccion y el segundo parametro es el valor que hace referencia al monto de la transaccion
+                    //cargo el diccionario de transacciones con 5 transacciones
+                    for (int i = 0; i < 5; i++)
+                    {
+                        transacciones.Add(i, GenerateRandomTransaction()); //El primer parametro es la clave que hace referencia a la transaccion y el segundo parametro es el valor que hace referencia al monto de la transaccion
+                    }
+
+                    foreach (KeyValuePair<int, float> transaccion in transacciones)
+                    {
+                        Console.WriteLine("");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Estarjeta no es Dinners Club");
                 }
 
-                foreach (KeyValuePair<int, float> transaccion in transacciones)
-                {
-                    Console.WriteLine("");
-                }
+                
+
             }
         }
     }
