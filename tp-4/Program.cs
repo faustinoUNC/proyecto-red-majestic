@@ -1,11 +1,8 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Drawing;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Transactions;
-using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿
+using Microsoft.VisualBasic;// Esta libreria es para poder usar el metodo de conversion de string a float , en este programa se usa para convertir el string ingresado por el usuario a un numero flotante
+using System; //Esta libreria es para poder usar las clases de consola y de manejo de excepciones como TryParse
+using System.Numerics;// Esta libreria es para poder usar las clases de matematicas como Random
+
 
 namespace tp_4
 {
